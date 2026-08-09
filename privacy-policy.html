@@ -25,172 +25,192 @@
 <body>
 
 <h1>Privacy Policy</h1>
-<p class="updated">Last updated: <span class="placeholder">[DATE]</span> — App version 1.0</p>
+<p class="updated">Last updated: 8 August 2026 — App version 1.0</p>
 
 <div class="callout">
-<strong>The short version:</strong> Steady reads health data from Apple Health to calculate your
-readiness score, and stores your workouts, focus sessions, and profile information — all
-entirely on your device. Steady has no backend server, no account system beyond a local
-username, no analytics, no advertising, and no third-party data sharing of any kind. Nothing
-you do in Steady is transmitted anywhere unless you explicitly choose to export or share it
-yourself.
+<strong>The short version:</strong> Steady requires an account and stores your data on servers we
+control (hosted by Supabase in the EU). Your workouts, focus sessions and profile sync to that
+account so they survive changing phones. Anything you post to the feed — captions, photos, comments
+— is visible to people who follow you, and your name, handle, bio, photo and post counts are
+visible to any signed-in Steady user. Steady has no advertising, no analytics SDK, no tracking
+across other apps, and never sells your data.
 </div>
 
 <h2>1. Who we are</h2>
 <p>
-Steady ("the App", "we", "us") is developed by <span class="placeholder">[Your Name / Developer Name]</span>
-("the Developer"). This Privacy Policy explains what information Steady accesses, how it is used,
-and the choices you have. It applies to the Steady iOS application and its widget/Live Activity
-extension.
+Steady ("the App", "we", "us") is developed by
+Avesta Alamgiralam ("the Developer"), who is the data controller
+for the purposes of the UK GDPR and EU GDPR. This Privacy Policy explains what information Steady
+collects, why, who can see it, and the choices you have. It applies to the Steady iOS application
+and its widget/Live Activity extension.
 </p>
 <p>
 Contact: <a href="mailto:avestaalam@gmail.com">avestaalam@gmail.com</a>
 </p>
 
-<h2>2. Data Steady accesses</h2>
+<h2>2. Data we collect</h2>
 
-<h3>2.1 Apple HealthKit data (read-only)</h3>
+<h3>2.1 Account</h3>
 <p>
-With your explicit permission (granted through Apple's own Health permission screen, which Steady
-cannot bypass or pre-select), Steady reads the following categories from Apple Health:
-</p>
-<ul>
-  <li>Heart Rate Variability (HRV / SDNN)</li>
-  <li>Resting Heart Rate and Heart Rate (including during workouts)</li>
-  <li>Sleep Analysis</li>
-  <li>Step Count and Distance (walking/running)</li>
-  <li>Flights Climbed, Active Energy, Stand Minutes</li>
-  <li>VO₂ Max, Respiratory Rate, Blood Oxygen, Walking Heart Rate</li>
-  <li>Body Weight and Body Fat Percentage (when available from a connected scale)</li>
-  <li>Workout records (for HR statistics)</li>
-</ul>
-<p>
-<strong>Steady never requests write access to HealthKit.</strong> It only reads data — it never
-adds, modifies, or deletes anything in your Apple Health records. You can review or revoke any of
-these permissions at any time in <strong>iOS Settings → Privacy &amp; Security → Health → Steady</strong>.
+An account is required to use Steady. You can create one with an email address and password, or
+with Sign in with Apple. If you use Sign in with Apple and choose to hide your email, we only ever
+receive Apple's relay address. Passwords are hashed by our authentication provider — we never see
+or store the password itself.
 </p>
 
-<div class="callout">
-<strong>Apple HealthKit-specific disclosure (required by Apple):</strong> Steady will not use or
-disclose information obtained through HealthKit for advertising or other use-based data mining
-purposes unrelated to providing health or fitness services. Steady will not sell HealthKit data
-to advertising platforms, data brokers, or information resellers. Steady will not share HealthKit
-data with any third party, for any purpose — Steady has no backend server to share it with.
-</div>
-
-<h3>2.2 Information you provide directly</h3>
-<ul>
-  <li><strong>Profile info:</strong> first name, biological sex, date of birth, height, device
-      type (iPhone / Garmin / Apple Watch) — used to personalize calculations like VO₂ Max and
-      HRV baselines.</li>
-  <li><strong>Username:</strong> a local display name stored in the device Keychain. Steady does
-      not verify identity, collect an email or phone number, or require any real-world
-      information to use the app.</li>
-  <li><strong>Workout data:</strong> routines, sessions, sets, reps, and weights you log, or
-      import from a Hevy CSV export.</li>
-  <li><strong>Focus session data:</strong> categories, session durations, and history you create
-      in the Focus tab.</li>
-</ul>
-
-<h3>2.3 Diagnostics (crash logs)</h3>
+<h3>2.2 Profile</h3>
 <p>
-If the app crashes, Steady writes a plain-text diagnostic report (crash type, app/OS version, and
-a raw stack trace) to a local file on your device. This file is <strong>never transmitted
-automatically</strong>. You can view, delete, or manually share a crash log yourself from
-<strong>Settings → About → Diagnostics</strong> using the standard iOS share sheet — if you choose
-to share one (e.g. by email, to help us fix a bug), you decide who it goes to.
+Your display name, unique handle, bio and profile photo. Signing up asks for your name and nothing
+else. Older accounts may also hold a date of birth, biological sex, height and weight, which earlier
+versions collected for a readiness feature that has since been removed — nothing in the app reads
+them, they are never shown to other users, and you can clear them in Settings → Profile or remove
+them entirely by deleting your account.
 </p>
 
-<h3>2.4 What Steady does <em>not</em> collect</h3>
+<h3>2.3 Training data</h3>
+<p>
+Workout sessions (exercises, sets, weights, duration), saved routines, focus sessions and
+categories, and your Momentum score. This syncs to your account so it survives reinstalling the app
+or moving to a new phone.
+</p>
+
+<h3>2.4 Social content</h3>
+<p>
+Posts you choose to share (captions, photos, workout and focus summaries), comments, reactions,
+who you follow and who follows you, crews you join, and messages you send in a crew. Users you
+block, and reports you file.
+</p>
+
+<h3>2.5 Approximate location (optional)</h3>
+<p>
+If you grant location permission, Steady rounds your position to roughly one kilometre
+<em>on your device</em> before sending it, and stores only that coarse figure. It is used solely to
+suggest nearby Steady members you might know. It is never shown to other users, never returned by
+any part of the app that displays profiles, and is only ever read inside the suggestion
+calculation. Decline the permission and everything else works unchanged.
+</p>
+
+<h3>2.6 Notifications</h3>
+<p>
+If you enable push notifications, we store an Apple-issued device token so we can send you alerts
+about follows, comments and reactions. It identifies the device installation, not you personally,
+and is deleted when you sign out or disable notifications.
+</p>
+
+<h3>2.7 Apple Health</h3>
+<p>
+<strong>Steady only writes to Apple Health — it reads nothing.</strong> When you finish a workout,
+Steady saves it to Apple Health so it appears in the Fitness app and counts toward your rings. It
+requests write access only. Earlier versions of Steady read heart-rate variability, sleep and step
+data to compute a readiness score; that feature has been removed and the app no longer requests or
+receives any health data. As required by Apple, we confirm that Steady does not use HealthKit data
+for advertising, marketing or use-based data mining, and does not sell it to anyone.
+</p>
+
+<h3>2.8 What we do not collect</h3>
 <ul>
-  <li>No advertising identifiers, no ad SDKs, no advertising of any kind</li>
-  <li>No analytics or usage-tracking SDKs (no Firebase, Mixpanel, Amplitude, etc.)</li>
-  <li>No location data</li>
-  <li>No contacts, photos, microphone, or camera access</li>
-  <li>No cookies (Steady is a native app, not a web view)</li>
-  <li>No third-party integrations that receive your data — Steady previously included an optional
-      Strava connection; it has been fully removed from the app</li>
+  <li>No advertising identifiers, no ad networks, no cross-app or cross-site tracking.</li>
+  <li>No third-party analytics or crash-reporting SDK. Crash logs stay on your device and are
+      only shared if you choose to send them.</li>
+  <li>No contacts, no photo library beyond images you deliberately attach to a post, no
+      microphone, no precise GPS coordinates.</li>
 </ul>
 
-<h2>3. How your data is stored</h2>
+<h2>3. Who can see what</h2>
 <table>
-  <tr><th>Data</th><th>Where it lives</th><th>Protection</th></tr>
-  <tr><td>Workouts, focus sessions, profile, settings</td><td>Local device storage (UserDefaults)</td><td>Encrypted at rest (<code>NSFileProtectionComplete</code>) — accessible only while your device is unlocked</td></tr>
-  <tr><td>Username</td><td>iOS Keychain</td><td>Device-only; never syncs via iCloud Keychain to other devices</td></tr>
-  <tr><td>HealthKit data</td><td>Apple Health, on your device</td><td>Governed by Apple's own Health privacy protections; Steady only holds it in memory while the app is open</td></tr>
-  <tr><td>Crash logs</td><td>Local app document storage</td><td>Same device-only encryption as above</td></tr>
+  <tr><th>Data</th><th>Who can see it</th></tr>
+  <tr><td>Name, handle, bio, profile photo, follower / post counts</td><td>Any signed-in Steady user</td></tr>
+  <tr><td>Posts, captions, photos, focus shares</td><td>People who follow you (and crewmates, for workouts shared to a crew)</td></tr>
+  <tr><td>Comments and reactions</td><td>Anyone who can see the post</td></tr>
+  <tr><td>Crew messages and daily check-ins</td><td>Members of that crew only</td></tr>
+  <tr><td>Workouts, focus sessions, routines, Momentum</td><td>Only you, unless you share a specific session</td></tr>
+  <tr><td>Email address, date of birth, sex, height, weight</td><td>Only you</td></tr>
+  <tr><td>Approximate location</td><td>Nobody — used only inside the suggestion calculation</td></tr>
+  <tr><td>Blocks and reports you file</td><td>Only you and the Developer; the other person is never told</td></tr>
 </table>
 <p>
-<strong>Steady has no backend server, no cloud database, and no remote infrastructure of any kind.</strong>
-All processing — your readiness score, VO₂ Max estimate, HRV baseline, insights, and every chart in
-the app — happens entirely on your device. Your data never leaves your phone unless you explicitly
-export or share it.
+Access is enforced in the database itself with row-level security, not merely hidden in the app —
+so a modified client cannot read data it should not have.
 </p>
 
-<h2>4. Data sharing</h2>
+<h2>4. Where your data is stored</h2>
 <p>
-Steady does not sell, rent, trade, or share your personal data or health data with any third party,
-for any purpose, under any circumstances. There is no advertising network, no data broker
-relationship, and no analytics vendor with access to your information — because there is no server
-for any of them to connect to.
+Steady uses <a href="https://supabase.com/privacy">Supabase</a> for its database, authentication and
+file storage, hosted in the EU (<code>eu-central-1</code>, Frankfurt). Photos live in Supabase
+Storage: post photos are in a private bucket reachable only through short-lived signed links, while
+profile pictures are in a public bucket, since they are shown throughout the app.
 </p>
 
-<h2>5. Your rights (GDPR, UK GDPR, CCPA, and similar laws)</h2>
+<h2>5. Third parties we share data with</h2>
 <p>
-Because all of your data is stored exclusively on your own device, most data-subject rights under
-the EU/UK GDPR, California's CCPA/CPRA, and similar laws are already satisfied by design — there is
-no copy of your data anywhere else for us to act on. Specifically:
+We do not sell your data and we do not share it for advertising. Data is shared only with the
+service providers that make the app work:
 </p>
+<table>
+  <tr><th>Provider</th><th>What it receives</th><th>Why</th></tr>
+  <tr><td>Supabase</td><td>Everything in section 2 except Apple Health data</td><td>Database, login, file storage</td></tr>
+  <tr><td>Apple (APNs)</td><td>Device token and notification text</td><td>Delivering push notifications</td></tr>
+  <tr><td>Apple (Sign in with Apple)</td><td>Your Apple sign-in, if you use it</td><td>Authentication</td></tr>
+  <tr><td>Brevo</td><td>Your email address</td><td>Sending confirmation and password-reset emails</td></tr>
+  <tr><td>hCaptcha</td><td>Anti-abuse signals during sign-up</td><td>Blocking automated account creation</td></tr>
+</table>
+
+<h2>6. Legal basis for processing (GDPR)</h2>
 <ul>
-  <li><strong>Right to access / portability</strong> — go to <em>Settings → Data &amp; Privacy →
-      Export Data</em> to generate a JSON export of your workouts and focus sessions at any time.</li>
-  <li><strong>Right to erasure ("right to be forgotten")</strong> — use <em>Settings → Data &amp;
-      Privacy → Clear Workouts / Clear Focus Sessions / Full Reset</em>, or simply uninstall the
-      app. Because nothing is stored on a server, deleting the app deletes everything Steady has
-      ever stored about you.</li>
-  <li><strong>Right to rectification</strong> — edit your profile at any time in
-      <em>Settings → Health → Profile</em>.</li>
-  <li><strong>Right to restrict / object to processing</strong> — revoke HealthKit permissions at
-      any time in <em>iOS Settings → Health → Steady</em>; the app will simply stop reading that
-      category of data.</li>
-  <li><strong>Right to know / delete / opt out of sale (CCPA/CPRA)</strong> — Steady does not sell
-      personal information, so there is nothing to opt out of. You may request confirmation of
-      this, or request deletion assistance, by contacting us (see Section 8).</li>
+  <li><strong>Performance of a contract</strong> — running your account and syncing your training data.</li>
+  <li><strong>Consent</strong> — approximate location, push notifications, and writing workouts to
+      Apple Health. Each is optional and can be withdrawn in iOS Settings at any time.</li>
+  <li><strong>Legitimate interests</strong> — keeping the service secure and free of abuse
+      (rate limiting, blocks, reports).</li>
 </ul>
+
+<h2>7. How long we keep it</h2>
 <p>
-Because Steady has no server-side account system, we generally cannot identify "your" data
-independently of the device in front of you — if you need help exercising any of these rights
-beyond what the in-app controls provide, contact us and we will assist to the extent technically
-possible.
+Your data is kept while your account exists. Deleting your account removes your profile, posts,
+comments, reactions, follows, crew memberships, training data and photos. Deletion is immediate and
+cannot be undone. Rate-limiting records are automatically discarded within an hour. Reports are
+retained after deletion so that repeated abuse can still be acted on.
 </p>
 
-<h2>6. Children's privacy</h2>
+<h2>8. Deleting your account</h2>
 <p>
-Steady requires users to be at least 14 years old — the date-of-birth picker in onboarding and
-Settings will not accept a birth date more recent than 14 years before today. Steady does not
-knowingly collect information from children under 14. If you believe a child under 14 has provided
-information to Steady, contact us and we will assist with deletion (see Section 3 — since data is
-local to the device, this is typically resolved by deleting the app).
+In the app: <strong>Settings → Account → Hard Reset — Delete Account</strong>. This deletes the
+account itself and everything tied to it, on the device and on the server. No email to us is
+required. You can also write to the address in section 1 and we will action it.
+</p>
+<p>
+Note that Apple does not permit any app to reset its own Health permissions. To revoke Steady's
+write access to Apple Health, use iOS Settings → Health → Data Access &amp; Devices → Steady.
 </p>
 
-<h2>7. Data retention</h2>
+<h2>9. Your rights</h2>
 <p>
-Your data is retained on your device for as long as you use the app, until you delete it via the
-in-app controls described in Section 5, or until you uninstall Steady. Crash logs are retained
-locally until you manually clear them from Settings → About → Diagnostics.
+Under the GDPR you have the right to access, correct, export, delete or restrict processing of your
+data, and to object to it. Most of these you can exercise directly in the app — Settings lets you
+edit your profile, export your workout and focus data, and delete your account outright. For
+anything else, email the address in section 1; we will respond within 30 days. You also have the
+right to complain to your national data protection authority.
 </p>
 
-<h2>8. Changes to this policy</h2>
+<h2>10. Children</h2>
 <p>
-If this policy changes in a material way, the "Last updated" date at the top of this page will be
-revised, and we recommend checking it periodically. Continued use of Steady after a change
-constitutes acceptance of the revised policy.
+Steady is not intended for children under 13, and we do not knowingly collect data from them. If
+you believe a child has created an account, contact us and we will remove it.
 </p>
 
-<h2>9. Contact us</h2>
+<h2>11. Security</h2>
 <p>
-Questions about this Privacy Policy or your data can be sent to:
-<a href="mailto:avestaalam@gmail.com">avestaalam@gmail.com</a>
+Traffic is encrypted in transit with TLS. Session tokens are held in the iOS Keychain, and app files
+use iOS complete file protection, meaning they are unreadable while the device is locked.
+Server-side, every table enforces row-level security so one account cannot read another's data. No
+system is perfectly secure, but we do not store payment details and we never see your password.
+</p>
+
+<h2>12. Changes to this policy</h2>
+<p>
+If this policy changes materially we will update the date at the top and, where the change is
+significant, notify you in the app. Continuing to use Steady after a change means you accept the
+updated policy.
 </p>
 
 </body>

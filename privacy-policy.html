@@ -15,7 +15,6 @@
   li { margin-bottom: 6px; }
   code { background: #f4f4f4; padding: 1px 6px; border-radius: 4px; font-size: 13px; }
   .callout { background: #f7f7fb; border-left: 3px solid #6a5acd; padding: 14px 18px; margin: 20px 0; border-radius: 4px; }
-  .placeholder { background: #fff3cd; padding: 1px 6px; border-radius: 4px; }
   a { color: #4a4ad8; }
   table { border-collapse: collapse; width: 100%; margin: 16px 0; }
   th, td { border: 1px solid #e0e0e0; padding: 8px 12px; text-align: left; font-size: 14px; }
@@ -25,7 +24,7 @@
 <body>
 
 <h1>Privacy Policy</h1>
-<p class="updated">Last updated: 8 August 2026 — App version 1.0</p>
+<p class="updated">Last updated: 13 August 2026 — App version 1.0</p>
 
 <div class="callout">
 <strong>The short version:</strong> Steady requires an account and stores your data on servers we
@@ -61,17 +60,22 @@ or store the password itself.
 <h3>2.2 Profile</h3>
 <p>
 Your display name, unique handle, bio and profile photo. Signing up asks for your name and nothing
-else. Older accounts may also hold a date of birth, biological sex, height and weight, which earlier
-versions collected for a readiness feature that has since been removed — nothing in the app reads
-them, they are never shown to other users, and you can clear them in Settings → Profile or remove
-them entirely by deleting your account.
+else.
+</p>
+<p>
+Settings → Profile also has an optional <strong>Physical</strong> section holding biological sex,
+height and weight. These are left over from a readiness feature that has since been removed: they
+are never required, nothing in the current app reads or displays them, and they are never shown to
+other users. If you have set them, they sync to your account like the rest of your profile. Leave
+them blank, clear them at any time in that same screen, or remove them along with everything else by
+deleting your account. Some accounts created before that feature was removed may also still hold a
+date of birth; the app no longer asks for one.
 </p>
 
 <h3>2.3 Training data</h3>
 <p>
-Workout sessions (exercises, sets, weights, duration), saved routines, focus sessions and
-categories, and your Momentum score. This syncs to your account so it survives reinstalling the app
-or moving to a new phone.
+Workout sessions (exercises, sets, weights, duration), saved routines, and focus sessions and
+categories. This syncs to your account so it survives reinstalling the app or moving to a new phone.
 </p>
 
 <h3>2.4 Social content</h3>
@@ -123,8 +127,8 @@ for advertising, marketing or use-based data mining, and does not sell it to any
   <tr><td>Posts, captions, photos, focus shares</td><td>People who follow you (and crewmates, for workouts shared to a crew)</td></tr>
   <tr><td>Comments and reactions</td><td>Anyone who can see the post</td></tr>
   <tr><td>Crew messages and daily check-ins</td><td>Members of that crew only</td></tr>
-  <tr><td>Workouts, focus sessions, routines, Momentum</td><td>Only you, unless you share a specific session</td></tr>
-  <tr><td>Email address, date of birth, sex, height, weight</td><td>Only you</td></tr>
+  <tr><td>Workouts, focus sessions, routines</td><td>Only you, unless you share a specific session</td></tr>
+  <tr><td>Email address, and the optional sex / height / weight fields</td><td>Only you</td></tr>
   <tr><td>Approximate location</td><td>Nobody — used only inside the suggestion calculation</td></tr>
   <tr><td>Blocks and reports you file</td><td>Only you and the Developer; the other person is never told</td></tr>
 </table>
@@ -167,9 +171,15 @@ service providers that make the app work:
 <h2>7. How long we keep it</h2>
 <p>
 Your data is kept while your account exists. Deleting your account removes your profile, posts,
-comments, reactions, follows, crew memberships, training data and photos. Deletion is immediate and
-cannot be undone. Rate-limiting records are automatically discarded within an hour. Reports are
-retained after deletion so that repeated abuse can still be acted on.
+comments, reactions, follows, crew memberships, training data, uploaded photos and the reports you
+filed. Deletion is immediate and cannot be undone.
+</p>
+<p>
+Two things intentionally outlive an individual record. Reports made <em>about</em> an account are
+kept after that account is gone, so that repeated abuse can still be recognised and acted on; they
+identify the reported content, not the reporter. Anti-abuse throttling records hold only a user id,
+an action name and a timestamp, and are discarded as soon as they fall outside the throttling
+window.
 </p>
 
 <h2>8. Deleting your account</h2>
@@ -211,6 +221,13 @@ system is perfectly secure, but we do not store payment details and we never see
 If this policy changes materially we will update the date at the top and, where the change is
 significant, notify you in the app. Continuing to use Steady after a change means you accept the
 updated policy.
+</p>
+
+<hr style="margin-top:48px;border:none;border-top:1px solid #eee">
+<p class="updated">
+<a href="terms-of-service.html">Terms of Use</a> ·
+<a href="support.html">Support</a> ·
+Contact <a href="mailto:avestaalam@gmail.com">avestaalam@gmail.com</a>
 </p>
 
 </body>

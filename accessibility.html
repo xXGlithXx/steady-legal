@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Steady — Accessibility</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+         max-width: 760px; margin: 0 auto; padding: 40px 24px 100px; color: #1a1a1a; line-height: 1.6; }
+  h1 { font-size: 28px; margin-bottom: 4px; }
+  .updated { color: #666; font-size: 14px; margin-bottom: 32px; }
+  h2 { font-size: 20px; margin-top: 40px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+  h3 { font-size: 16px; margin-top: 24px; }
+  ul, ol { padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  .callout { background: #f7f7fb; border-left: 3px solid #6a5acd; padding: 14px 18px; margin: 20px 0; border-radius: 4px; }
+  .gap { background: #fff8ec; border-left: 3px solid #d99a2b; padding: 14px 18px; margin: 20px 0; border-radius: 4px; }
+  a { color: #4a4ad8; }
+  .path { color: #444; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<h1>Accessibility</h1>
+<p class="updated">Last updated: 15 August 2026 — App version 1.0</p>
+
+<div class="callout">
+This statement says what works, what doesn't, and what is being fixed. It is
+written from an actual audit of the app rather than from a template, so the
+gaps below are real ones and the list is not flattering.
+</div>
+
+<h2>What works today</h2>
+
+<h3>VoiceOver</h3>
+<p>
+Every button that shows only an icon — the toolbar controls, the <span class="path">•••</span>
+menus, the send buttons, set completion toggles, the close and delete controls —
+has a spoken label describing what it does. Before August 2026 most of these
+announced only "Button", which made large parts of the app unusable with
+VoiceOver. Buttons whose state matters, such as a set's completion toggle,
+announce the current state rather than just the action.
+</p>
+
+<h3>Reduce Motion</h3>
+<p>
+Steady uses spring animations throughout. If you have Reduce Motion turned on in
+<span class="path">iOS Settings → Accessibility → Motion</span>, the app follows
+it automatically — the springs become short fades and the press-scale effect is
+dropped. There is also a separate switch under
+<span class="path">Settings → Theme → Feel</span> if you want the calmer motion
+without changing the system setting. The system setting alone is enough; the
+in-app switch only adds to it.
+</p>
+
+<h3>Touch targets</h3>
+<p>
+Small icons are padded out to a touch-friendly tap area rather than being
+tappable only on the glyph itself.
+</p>
+
+<h3>Colour and themes</h3>
+<p>
+Several themes are available under <span class="path">Settings → Theme</span>,
+including light and dark options. Colour is not the only way any state is
+communicated — completed sets, for example, also change their icon.
+</p>
+
+<h3>No time limits, no flashing</h3>
+<p>
+Nothing in Steady expires while you are reading it, and there is no flashing or
+strobing content. Rest timers can be paused, extended or skipped.
+</p>
+
+<h2>What does not work yet</h2>
+
+<div class="gap">
+<strong>Dynamic Type is not supported.</strong> Text in Steady is set at fixed
+sizes and does not grow when you increase text size in
+<span class="path">iOS Settings → Display &amp; Brightness → Text Size</span> or
+under Accessibility. If you rely on larger text, Steady will be hard to read.
+This is the app's most significant accessibility failure and we are not going to
+describe it as anything else.
+</div>
+
+<p>
+The cause is that the interface was built with fixed point sizes and fixed
+layout dimensions throughout — roughly eight hundred places. Making text scale
+properly means reworking those layouts so they can grow without clipping or
+overlapping, not flipping a switch. It is planned work rather than a quick fix,
+and this page will be updated when it lands.
+</p>
+
+<p>Also not yet done:</p>
+<ul>
+  <li><strong>Full VoiceOver navigation review.</strong> Individual controls are
+      labelled, but the reading order and grouping of complex screens — the
+      active workout view in particular — have not been audited end to end.</li>
+  <li><strong>Contrast measurement.</strong> Theme colours have not been checked
+      against WCAG contrast ratios. Some secondary and faint text is likely to
+      fall short.</li>
+  <li><strong>Voice Control and Switch Control</strong> have not been tested.</li>
+  <li><strong>Charts</strong> in Insights are visual only, with no spoken or
+      textual summary of the data behind them.</li>
+</ul>
+
+<h2>Standard applied</h2>
+<p>
+We are aiming at WCAG 2.2 Level AA as it applies to mobile applications, and at
+Apple's own accessibility guidance for iOS. Steady <strong>does not currently
+conform</strong> — the Dynamic Type gap above alone prevents it. This is a
+statement of partial conformance with the known gaps listed, not a claim of
+compliance.
+</p>
+
+<h2>If something is in your way</h2>
+<p>
+Email <a href="mailto:avestaalam@gmail.com">avestaalam@gmail.com</a> and describe
+what you were trying to do and what stopped you. Steady is built by one person,
+so replies usually take two to three days. Accessibility problems are treated as
+bugs, not as feature requests.
+</p>
+<p>
+If you use an assistive technology that Steady works badly with, saying which one
+and which iOS version is genuinely useful — most of these problems are invisible
+without it.
+</p>
+
+<h2>How this statement is kept honest</h2>
+<p>
+It is reviewed whenever the interface changes materially, and at least once a
+year. If something listed as working stops working, it moves to the section
+above and the date changes.
+</p>
+
+<hr style="margin-top:48px;border:none;border-top:1px solid #eee">
+<p class="updated">
+<a href="privacy-policy.html">Privacy Policy</a> ·
+<a href="terms-of-service.html">Terms of Use</a> ·
+<a href="community-guidelines.html">Community Guidelines</a> ·
+<a href="support.html">Support</a> ·
+<a href="report.html">Report content</a> ·
+Contact <a href="mailto:avestaalam@gmail.com">avestaalam@gmail.com</a>
+</p>
+
+</body>
+</html>

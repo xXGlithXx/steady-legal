@@ -22,7 +22,7 @@
 <body>
 
 <h1>Accessibility</h1>
-<p class="updated">Last updated: 15 August 2026 — App version 1.0</p>
+<p class="updated">Last updated: 16 August 2026 — App version 1.0</p>
 
 <div class="callout">
 This statement says what works, what doesn't, and what is being fixed. It is
@@ -41,6 +41,12 @@ announced only "Button", which made large parts of the app unusable with
 VoiceOver. Buttons whose state matters, such as a set's completion toggle,
 announce the current state rather than just the action.
 </p>
+<p>
+Set rows are grouped, so entering one announces which set it is instead of
+reading a disconnected run of numbers — while leaving the weight and reps fields
+individually reachable and editable, which collapsing the row into a single
+spoken string would have taken away.
+</p>
 
 <h3>Reduce Motion</h3>
 <p>
@@ -53,10 +59,60 @@ without changing the system setting. The system setting alone is enough; the
 in-app switch only adds to it.
 </p>
 
+<h3>Text size</h3>
+<p>
+Steady follows the text size set in <span class="path">iOS Settings → Display
+&amp; Brightness → Text Size</span> and under Accessibility, including the
+larger accessibility sizes. Text grows up to <strong>160%</strong> of its normal
+size and then stops.
+</p>
+<p>
+The cap is deliberate. Steady's screens include set tables with columns and
+figures sized around their contents, and past about 160% those layouts start
+cutting text off rather than reflowing. Text that is smaller than you asked for
+is a compromise; text that is chopped in half is a bug. Where a number sits in a
+fixed column it shrinks to fit instead of truncating, so nothing is hidden
+behind an ellipsis.
+</p>
+<p>
+Steady also has its own <strong>Larger Text</strong> setting under
+<span class="path">Settings → Accessibility</span>, which adds to your phone's
+rather than replacing it — useful if you want Steady bigger without enlarging
+everything else.
+</p>
+
+<h3>Contrast</h3>
+<p>
+Every text colour was measured against every background in all six themes in
+August 2026. Fifty-four of the ninety combinations were below the 4.5:1 that
+WCAG AA asks for; the muted tiers were as low as 2:1. The palette was re-spaced
+so all text now clears 4.5:1 in every theme, with the hue of each theme kept
+intact. Turning on <strong>Increase Contrast</strong>, in iOS or in Steady,
+strengthens it further to at least 5.5:1.
+</p>
+
+<h3>Steady's own accessibility settings</h3>
+<p>
+<span class="path">Settings → Accessibility</span> has Larger Text, Bold Text,
+Increase Contrast, Reduce Motion and Reduce Transparency. These are additive:
+where iOS already has a setting on, Steady follows it, the row says so and is
+locked. Nothing in Steady can turn off an accessibility setting you have made at
+the system level.
+</p>
+
 <h3>Touch targets</h3>
 <p>
 Small icons are padded out to a touch-friendly tap area rather than being
 tappable only on the glyph itself.
+</p>
+
+<h3>Charts</h3>
+<p>
+The training-volume chart and the year activity grid each have a spoken summary
+— the recent average, the best week, the direction of travel, and how many days
+were logged — so the information in them is available without seeing them. The
+year grid in particular used to present 364 separate unlabelled squares to
+VoiceOver; it is now a single element that describes itself.
 </p>
 
 <h3>Colour and themes</h3>
@@ -75,42 +131,36 @@ strobing content. Rest timers can be paused, extended or skipped.
 <h2>What does not work yet</h2>
 
 <div class="gap">
-<strong>Dynamic Type is not supported.</strong> Text in Steady is set at fixed
-sizes and does not grow when you increase text size in
-<span class="path">iOS Settings → Display &amp; Brightness → Text Size</span> or
-under Accessibility. If you rely on larger text, Steady will be hard to read.
-This is the app's most significant accessibility failure and we are not going to
-describe it as anything else.
+<strong>Text stops growing at 160%.</strong> If you use one of the largest
+accessibility text sizes, Steady will honour it up to that point and no further.
+This is the main remaining limitation, and fixing it properly means rebuilding
+the denser screens so they can reflow rather than just scale.
 </div>
 
-<p>
-The cause is that the interface was built with fixed point sizes and fixed
-layout dimensions throughout — roughly eight hundred places. Making text scale
-properly means reworking those layouts so they can grow without clipping or
-overlapping, not flipping a switch. It is planned work rather than a quick fix,
-and this page will be updated when it lands.
-</p>
-
-<p>Also not yet done:</p>
+<p>Also outstanding:</p>
 <ul>
-  <li><strong>Full VoiceOver navigation review.</strong> Individual controls are
-      labelled, but the reading order and grouping of complex screens — the
-      active workout view in particular — have not been audited end to end.</li>
-  <li><strong>Contrast measurement.</strong> Theme colours have not been checked
-      against WCAG contrast ratios. Some secondary and faint text is likely to
-      fall short.</li>
+  <li><strong>VoiceOver has been improved, not finished.</strong> Every
+      icon-only control is labelled, set rows are grouped so you are told which
+      set you are in without losing the ability to edit the fields inside, and
+      the charts describe themselves. The reading order of the busiest screens
+      has not been walked end to end by someone using VoiceOver as their only
+      means of navigation.</li>
   <li><strong>Voice Control and Switch Control</strong> have not been tested.</li>
-  <li><strong>Charts</strong> in Insights are visual only, with no spoken or
-      textual summary of the data behind them.</li>
+  <li><strong>Verified on the sign-up, sign-in and onboarding screens only.</strong>
+      The text scaling and contrast work was checked visually at an accessibility
+      text size on those screens. The signed-in screens were fixed from the code
+      and are covered by the shrink-to-fit behaviour, but have not had the same
+      screen-by-screen visual check.</li>
 </ul>
 
 <h2>Standard applied</h2>
 <p>
 We are aiming at WCAG 2.2 Level AA as it applies to mobile applications, and at
-Apple's own accessibility guidance for iOS. Steady <strong>does not currently
-conform</strong> — the Dynamic Type gap above alone prevents it. This is a
-statement of partial conformance with the known gaps listed, not a claim of
-compliance.
+Apple's own accessibility guidance for iOS. Contrast now meets AA throughout,
+and text scaling meets it up to 160%. Because scaling stops there, and because
+the VoiceOver and Switch Control testing above is incomplete, this remains a
+statement of <strong>partial conformance</strong> with the gaps listed, not a
+claim of full compliance.
 </p>
 
 <h2>If something is in your way</h2>

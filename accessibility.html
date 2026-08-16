@@ -48,6 +48,14 @@ individually reachable and editable, which collapsing the row into a single
 spoken string would have taken away.
 </p>
 
+<h3>Keyboard</h3>
+<p>
+Every numeric keyboard in Steady — weight, reps, added minutes, the sign-in code
+— has a <strong>Done</strong> button above it. Those keyboards have no return
+key, so until August 2026 there was no way to put them away: tapping elsewhere
+did nothing and no key dismissed them.
+</p>
+
 <h3>Reduce Motion</h3>
 <p>
 Steady uses spring animations throughout. If you have Reduce Motion turned on in
@@ -94,7 +102,7 @@ strengthens it further to at least 5.5:1.
 <h3>Steady's own accessibility settings</h3>
 <p>
 <span class="path">Settings → Accessibility</span> has Larger Text, Bold Text,
-Increase Contrast, Reduce Motion and Reduce Transparency. These are additive:
+Increase Contrast and Reduce Motion. These are additive:
 where iOS already has a setting on, Steady follows it, the row says so and is
 locked. Nothing in Steady can turn off an accessibility setting you have made at
 the system level.
@@ -146,6 +154,11 @@ the denser screens so they can reflow rather than just scale.
       has not been walked end to end by someone using VoiceOver as their only
       means of navigation.</li>
   <li><strong>Voice Control and Switch Control</strong> have not been tested.</li>
+  <li><strong>No Reduce Transparency setting</strong>, deliberately. Steady's
+      tab bar, cards and sheets are solid colour rather than frosted, so there
+      was nothing for a switch to flatten — it was removed rather than left
+      doing nothing. iOS's own setting is still honoured for the few blurred
+      surfaces that do exist.</li>
   <li><strong>Verified on the sign-up, sign-in and onboarding screens only.</strong>
       The text scaling and contrast work was checked visually at an accessibility
       text size on those screens. The signed-in screens were fixed from the code

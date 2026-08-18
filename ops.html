@@ -385,8 +385,13 @@ function flowChart(node, rows) {
 
   let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Signups and deletions">`;
   svg += `<line x1="${PAD.l}" x2="${W - PAD.r}" y1="${mid}" y2="${mid}" stroke="#282828"/>`;
-  svg += `<text x="${PAD.l - 7}" y="${mid - 4}" text-anchor="end" fill="#6c6c76" font-size="10"
-          font-family="ui-monospace, monospace">${num(max)}</text>`;
+  // Zero sits on the centre line, with the same maximum reflected above and
+  // below — otherwise a bar going down reads as a negative number.
+  const axis = (yy, text) => `<text x="${PAD.l - 7}" y="${yy}" text-anchor="end" fill="#6c6c76"
+    font-size="10" font-family="ui-monospace, monospace">${text}</text>`;
+  svg += axis((PAD.t + 8).toFixed(1), num(max));
+  svg += axis((mid + 3.5).toFixed(1), "0");
+  svg += axis((mid + half - 1).toFixed(1), num(max));
 
   rows.forEach((r, i) => {
     const cx = PAD.l + (i + 0.5) * (iw / rows.length);

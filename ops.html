@@ -137,6 +137,8 @@
   .msg { margin-top: 12px; font-size: 13px; color: var(--ink-2); }
   .msg.bad { color: var(--loss); }
   .msg.ok  { color: var(--good); }
+  .hint { color: var(--ink-3) !important; font-size: 12px !important; margin-top: 14px !important;
+          line-height: 1.5; }
   .hidden { display: none !important; }
   footer { margin-top: 34px; padding-top: 16px; border-top: 1px solid var(--hair);
            color: var(--ink-3); font-size: 12.5px; }
@@ -153,15 +155,20 @@
   <div id="step-email">
     <input id="email" type="email" inputmode="email" autocomplete="email"
            placeholder="you@example.com" value="avestaalam@gmail.com">
-    <button class="primary" id="send">Email me a sign-in link</button>
+    <button class="primary" id="send">Send me a sign-in email</button>
     <div id="captcha"></div>
   </div>
 
   <div id="step-code" class="hidden">
-    <p>Check your inbox. Open the link on this device — or paste it (or the code) here.</p>
-    <input id="code" type="text" autocomplete="one-time-code" placeholder="Paste the link, or a 6-digit code">
+    <p><strong>Copy the sign-in link</strong> out of the email — long-press it, Copy Link — and
+       paste it below. If the email shows a <strong>6-digit code</strong> instead, type that.</p>
+    <input id="code" type="text" autocomplete="one-time-code"
+           placeholder="Paste the link, or type the code">
     <button class="primary" id="verify">Sign in</button>
     <button class="link" id="back">← use a different email</button>
+    <p class="hint">Tapping the link only lands back here once this page's address is listed
+       under Supabase → Authentication → URL Configuration → Redirect URLs. Until it is,
+       copying beats tapping — a tapped link is spent either way.</p>
   </div>
 
   <div class="msg" id="gate-msg"></div>
@@ -584,7 +591,7 @@ $("send").addEventListener("click", async () => {
                `?redirect_to=${encodeURIComponent(location.origin + location.pathname)}`);
     $("step-email").classList.add("hidden");
     $("step-code").classList.remove("hidden");
-    gateMsg("Sent. The link works once and expires within the hour.", "ok");
+    gateMsg("Sent. Whatever is in it works once, and expires within the hour.", "ok");
   } catch (err) {
     gateMsg(err.message, "bad");
   } finally {
@@ -613,17 +620,41 @@ $("verify").addEventListener("click", async () => {
 
   const email = $("email").value.trim();
   const attempts = [];
-  if (raw.includes("token_hash=") || raw.includes("token=")) {
-    const q = raw.slice(raw.indexOf("?") + 1).replace(/#/g, "&");
+
+  if (raw.includes("token_hash=") || raw.includes("token=") || raw.includes("access_token=")) {
+    const q = raw.slice(raw.indexOf(raw.includes("?") ? "?" : "#") + 1).replace(/#/g, "&");
     const params = new URLSearchParams(q);
+    const type = params.get("type") || "magiclink";
+
+    // Already signed in: some links come back with the whole session in the
+    // fragment, and there is nothing left to verify.
+    if (params.get("access_token")) {
+      saveSession({ access_token: params.get("access_token"),
+                    refresh_token: params.get("refresh_token") });
+      gateMsg("");
+      await load();
+      $("verify").disabled = false;
+      return;
+    }
+
+    // The one that was wrong. Supabase's own sign-in links carry the *hashed*
+    // token in `token=`, not the six-digit one, so it has to go back as
+    // `token_hash`. Sent as `token` it comes back "Token has expired or is
+    // invalid", which is a maddening thing to be told about a link that is
+    // neither — and it is why pasting the link never worked.
     const hash = params.get("token_hash");
     const tok  = params.get("token");
-    const type = params.get("type") || "magiclink";
     if (hash) attempts.push({ type, token_hash: hash });
-    if (tok)  attempts.push({ type, token: tok, email });
+    if (tok) {
+      attempts.push({ type, token_hash: tok });
+      attempts.push({ type, token: tok, email });
+    }
   } else {
+    // A typed code. `email` is the type for a six-digit one; the rest are
+    // there so a pasted token of any shape still has a chance.
     attempts.push({ type: "email", token: raw, email });
     attempts.push({ type: "magiclink", token: raw, email });
+    attempts.push({ type: "magiclink", token_hash: raw });
   }
 
   let lastError = "That didn't work.";
@@ -637,7 +668,9 @@ $("verify").addEventListener("click", async () => {
       return;
     } catch (err) { lastError = err.message; }
   }
-  gateMsg(lastError, "bad");
+  gateMsg(/expired|invalid/i.test(lastError)
+    ? "That link or code has been used or has run out. Send a new one — and copy the link rather than tapping it."
+    : lastError, "bad");
   $("verify").disabled = false;
 });
 
@@ -658,6 +691,18 @@ $("ranges").addEventListener("click", async (e) => {
   // Clicking the link in the email lands here with the tokens in the fragment,
   // which is then wiped from the address bar so a shoulder-surfed URL is worth
   // nothing.
+  // A returning link can also come back carrying a failure. Silently showing
+  // the sign-in box again reads as "nothing happened", which is the least
+  // helpful thing a page can do.
+  if (location.hash.includes("error") || location.search.includes("error")) {
+    const p = new URLSearchParams((location.hash.slice(1) + "&" + location.search.slice(1)));
+    show("gate");
+    gateMsg(decodeURIComponent(
+      (p.get("error_description") || p.get("error") || "that link didn't work").replace(/\+/g, " ")), "bad");
+    history.replaceState(null, "", location.pathname);
+    return;
+  }
+
   if (location.hash.includes("access_token")) {
     const p = new URLSearchParams(location.hash.slice(1));
     saveSession({ access_token: p.get("access_token"), refresh_token: p.get("refresh_token") });

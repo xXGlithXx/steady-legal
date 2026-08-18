@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Steady — Ops</title>
+<script src="https://js.hcaptcha.com/1/api.js?render=explicit" async defer></script>
 <style>
   /* Steady's own palette, so the back office looks like it belongs to the
      app rather than to a reporting tool. Near-black canvas, purple accent,
@@ -153,6 +154,7 @@
     <input id="email" type="email" inputmode="email" autocomplete="email"
            placeholder="you@example.com" value="avestaalam@gmail.com">
     <button class="primary" id="send">Email me a sign-in link</button>
+    <div id="captcha"></div>
   </div>
 
   <div id="step-code" class="hidden">
@@ -544,14 +546,41 @@ async function load() {
   }
 }
 
+/**
+ * The project has captcha protection switched on for auth, which is why the
+ * app carries the hCaptcha SDK — the same protection applies here, and a
+ * request without a token is refused outright. Invisible mode: for a human
+ * clicking the button it is a beat of nothing, and only a suspicious request
+ * ever sees a challenge.
+ */
+const CAPTCHA_SITE_KEY = "9ffcbe24-d85c-4a88-8174-04ea46061a7a";
+let captchaId = null;
+
+/** Resolves with a fresh token, rendering the invisible widget on first use. */
+async function captchaToken() {
+  if (!window.hcaptcha) throw new Error("Captcha didn't load — reload the page.");
+  if (captchaId === null) {
+    captchaId = window.hcaptcha.render("captcha", {
+      sitekey: CAPTCHA_SITE_KEY,
+      size: "invisible",
+    });
+  } else {
+    window.hcaptcha.reset(captchaId);
+  }
+  const result = await window.hcaptcha.execute(captchaId, { async: true });
+  return result.response;
+}
+
 $("send").addEventListener("click", async () => {
   const email = $("email").value.trim();
   if (!email) return;
   $("send").disabled = true;
-  gateMsg("Sending…");
+  gateMsg("Checking you're human…");
   try {
+    const token = await captchaToken();
+    gateMsg("Sending…");
     // `create_user: false` so a typo can't quietly make an account.
-    await auth("otp", { email, create_user: false },
+    await auth("otp", { email, create_user: false, gotrue_meta_security: { captcha_token: token } },
                `?redirect_to=${encodeURIComponent(location.origin + location.pathname)}`);
     $("step-email").classList.add("hidden");
     $("step-code").classList.remove("hidden");

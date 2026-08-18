@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Steady — Ops</title>
+<style>
+  /* Steady's own palette, so the back office looks like it belongs to the
+     app rather than to a reporting tool. Near-black canvas, purple accent,
+     and the section hues kept for what they mean in the product: purple is
+     focus, sky is social, green is healthy, red is loss. Committed to dark
+     on purpose — the app is near-black and this sits beside it. */
+  :root {
+    --canvas:  #080808;
+    --surface: #0d0d0d;
+    --raised:  #131313;
+    --hair:    #1c1c1c;
+    --hair-lit:#282828;
+    --ink:     #f2f2f4;
+    --ink-2:   #a3a3ad;
+    --ink-3:   #6c6c76;
+    --accent:  #a78bfa;
+    --social:  #38bdf8;
+    --good:    #4ade80;
+    --warn:    #facc15;
+    --loss:    #f87171;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { background: var(--canvas); }
+  body {
+    margin: 0; padding: 0 16px 64px;
+    color: var(--ink);
+    font: 400 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+
+  /* Header */
+  header {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: baseline;
+    padding: 28px 0 20px; border-bottom: 1px solid var(--hair); margin-bottom: 22px;
+  }
+  h1 { margin: 0; font-size: 19px; font-weight: 660; letter-spacing: -0.01em; }
+  h1 span { color: var(--accent); }
+  .asof { color: var(--ink-3); font: 400 12px/1 var(--mono); }
+  .spacer { flex: 1 1 auto; }
+
+  .chips { display: flex; gap: 5px; }
+  .chip {
+    background: var(--surface); border: 1px solid var(--hair-lit); color: var(--ink-2);
+    border-radius: 7px; padding: 5px 11px; cursor: pointer;
+    font: 600 11px/1 var(--mono); letter-spacing: .05em;
+  }
+  .chip:hover { border-color: #3a3a3a; color: var(--ink); }
+  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #14061f; }
+  .chip:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+
+  h2 {
+    margin: 30px 0 10px; font: 700 10.5px/1 var(--mono);
+    letter-spacing: .13em; text-transform: uppercase; color: var(--ink-3);
+  }
+
+  /* Figures */
+  .figures { display: grid; gap: 9px; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); }
+  .fig {
+    background: var(--surface); border: 1px solid var(--hair);
+    border-radius: 11px; padding: 13px 14px;
+  }
+  .fig .v {
+    display: block; font-size: 25px; font-weight: 680; line-height: 1.15;
+    letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+  }
+  .fig .k {
+    display: block; margin-top: 3px; color: var(--ink-3);
+    font: 600 9.5px/1.3 var(--mono); letter-spacing: .09em; text-transform: uppercase;
+  }
+  .fig .sub { display: block; margin-top: 6px; color: var(--ink-2); font-size: 12px; }
+  .fig.accent .v { color: var(--accent); }
+  .fig.social .v { color: var(--social); }
+  .fig.good   .v { color: var(--good); }
+  .fig.loss   .v { color: var(--loss); }
+
+  /* Panels */
+  .panel {
+    background: var(--surface); border: 1px solid var(--hair);
+    border-radius: 11px; padding: 15px 16px;
+  }
+  .panel + .panel { margin-top: 9px; }
+  .panel h3 { margin: 0 0 3px; font-size: 14px; font-weight: 640; }
+  .panel p  { margin: 0; color: var(--ink-2); font-size: 13px; }
+  .cols { display: grid; gap: 9px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+
+  /* Chart */
+  .chart { position: relative; }
+  .chart svg { display: block; width: 100%; height: auto; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 9px; }
+  .legend i {
+    width: 9px; height: 9px; border-radius: 2px; display: inline-block; margin-right: 6px;
+  }
+  .legend span { color: var(--ink-2); font: 500 11.5px/1 var(--mono); }
+
+  /* Rows */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 7px 0; border-bottom: 1px solid var(--hair); }
+  th { color: var(--ink-3); font: 600 9.5px/1 var(--mono); letter-spacing: .09em; text-transform: uppercase; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); }
+  tr:last-child td { border-bottom: none; }
+
+  .note { color: var(--ink-3); font-size: 12.5px; margin-top: 8px; }
+  .note code { font: 400 11.5px var(--mono); background: var(--raised); padding: 1px 5px; border-radius: 4px; }
+
+  /* Sign-in */
+  .gate { max-width: 380px; margin: 14vh auto 0; text-align: left; }
+  .gate h1 { font-size: 22px; margin-bottom: 6px; }
+  .gate p { color: var(--ink-2); font-size: 14px; margin: 0 0 18px; }
+  .gate input {
+    width: 100%; background: var(--raised); border: 1px solid var(--hair-lit);
+    color: var(--ink); border-radius: 9px; padding: 11px 12px; font-size: 15px;
+    margin-bottom: 9px; font-family: inherit;
+  }
+  .gate input::placeholder { color: var(--ink-3); }
+  button.primary {
+    width: 100%; background: var(--accent); color: #14061f; border: none;
+    border-radius: 9px; padding: 11px 12px; font-size: 15px; font-weight: 640; cursor: pointer;
+  }
+  button.primary:disabled { opacity: .5; cursor: default; }
+  button.link {
+    background: none; border: none; color: var(--ink-3); cursor: pointer;
+    font: 500 12px var(--mono); padding: 4px 0;
+  }
+  button.link:hover { color: var(--ink-2); }
+  .msg { margin-top: 12px; font-size: 13px; color: var(--ink-2); }
+  .msg.bad { color: var(--loss); }
+  .msg.ok  { color: var(--good); }
+  .hidden { display: none !important; }
+  footer { margin-top: 34px; padding-top: 16px; border-top: 1px solid var(--hair);
+           color: var(--ink-3); font-size: 12.5px; }
+  footer p { margin: 0 0 6px; }
+</style>
+</head>
+<body>
+
+<!-- ─────────────────────────────  SIGN IN  ───────────────────────────── -->
+<div class="wrap gate" id="gate">
+  <h1>Steady <span>ops</span></h1>
+  <p>This page is public; the numbers are not. Sign in with the account that owns the app.</p>
+
+  <div id="step-email">
+    <input id="email" type="email" inputmode="email" autocomplete="email"
+           placeholder="you@example.com" value="avestaalam@gmail.com">
+    <button class="primary" id="send">Email me a sign-in link</button>
+  </div>
+
+  <div id="step-code" class="hidden">
+    <p>Check your inbox. Open the link on this device — or paste it (or the code) here.</p>
+    <input id="code" type="text" autocomplete="one-time-code" placeholder="Paste the link, or a 6-digit code">
+    <button class="primary" id="verify">Sign in</button>
+    <button class="link" id="back">← use a different email</button>
+  </div>
+
+  <div class="msg" id="gate-msg"></div>
+</div>
+
+<!-- ─────────────────────────────  DASHBOARD  ─────────────────────────── -->
+<div class="wrap hidden" id="app">
+  <header>
+    <h1>Steady <span>ops</span></h1>
+    <div class="spacer"></div>
+    <div class="chips" id="ranges">
+      <button class="chip" data-days="7">7d</button>
+      <button class="chip" data-days="30" aria-pressed="true">30d</button>
+      <button class="chip" data-days="90">90d</button>
+    </div>
+    <button class="chip" id="signout">sign out</button>
+  </header>
+
+  <div class="asof" id="asof"></div>
+
+  <h2>People</h2>
+  <div class="figures" id="people"></div>
+
+  <h2>Accounts over time</h2>
+  <div class="panel chart" id="chart-accounts"></div>
+
+  <h2>Signups and deletions</h2>
+  <div class="panel chart" id="chart-flow"></div>
+
+  <h2>Activity</h2>
+  <div class="figures" id="activity"></div>
+  <div class="panel chart" id="chart-activity" style="margin-top:9px"></div>
+
+  <h2>Churn</h2>
+  <div id="churn"></div>
+
+  <h2>Money</h2>
+  <div class="cols" id="money"></div>
+
+  <h2>Housekeeping</h2>
+  <div class="figures" id="housekeeping"></div>
+
+  <footer id="footer"></footer>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   Steady ops dashboard.
+
+   The page is served from a public URL and holds no secret. The publishable
+   key below is public by design — it is in the iOS app too, and on its own it
+   opens nothing. Everything here comes from one function, `get_dashboard`,
+   which is granted to signed-in users and then refuses anybody who is not in
+   `app_admins`. So finding this page gets you a login box; signing in with an
+   ordinary Steady account gets you "not authorised".
+
+   No libraries. Auth and data are plain fetch calls against the REST and
+   GoTrue endpoints, which keeps the whole thing one file with nothing to
+   go stale.
+   ══════════════════════════════════════════════════════════════════════ */
+
+const URL_BASE = "https://llnwylmnatwmquobyfrm.supabase.co";
+const ANON_KEY = "sb_publishable_OvPuTNNu9WTcZGRq-swJxQ_VdyfNIOJ";
+const STORE    = "steady_ops_session";
+
+let session = null;      // { access_token, refresh_token }
+let days    = 30;
+
+/* ── plumbing ─────────────────────────────────────────────────────────── */
+
+const $ = (id) => document.getElementById(id);
+
+function saveSession(s) {
+  session = s;
+  try { localStorage.setItem(STORE, JSON.stringify(s)); } catch (_) {}
+}
+function clearSession() {
+  session = null;
+  try { localStorage.removeItem(STORE); } catch (_) {}
+}
+function loadSession() {
+  try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch (_) { return null; }
+}
+
+async function auth(path, body, query = "") {
+  const res = await fetch(`${URL_BASE}/auth/v1/${path}${query}`, {
+    method: "POST",
+    headers: { "apikey": ANON_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json.error_description || json.msg || json.message || `HTTP ${res.status}`);
+  return json;
+}
+
+/** Calls the dashboard function, refreshing the token once if it has aged out. */
+async function fetchDashboard(retry = true) {
+  const res = await fetch(`${URL_BASE}/rest/v1/rpc/get_dashboard`, {
+    method: "POST",
+    headers: {
+      "apikey": ANON_KEY,
+      "Authorization": `Bearer ${session.access_token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ days }),
+  });
+  if (res.status === 401 && retry && session.refresh_token) {
+    const fresh = await auth("token", { refresh_token: session.refresh_token }, "?grant_type=refresh_token");
+    saveSession({ access_token: fresh.access_token, refresh_token: fresh.refresh_token });
+    return fetchDashboard(false);
+  }
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json.message || `HTTP ${res.status}`);
+  return json;
+}
+
+/* ── formatting ───────────────────────────────────────────────────────── */
+
+const nf = new Intl.NumberFormat("en-GB");
+const num = (n) => nf.format(Math.round(Number(n) || 0));
+
+function bytes(b) {
+  b = Number(b) || 0;
+  if (b === 0) return "0";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.min(units.length - 1, Math.floor(Math.log(b) / Math.log(1024)));
+  return `${(b / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
+}
+
+function hoursFromMinutes(m) {
+  m = Math.round(Number(m) || 0);
+  if (m < 60) return `${m}m`;
+  return `${Math.floor(m / 60)}h ${m % 60}m`;
+}
+
+/** Local time, always — the database thinks in UTC and nobody lives there. */
+function localTime(iso) {
+  return new Date(iso).toLocaleString("en-GB", {
+    day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+  });
+}
+const shortDay = (d) =>
+  new Date(d + "T12:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+
+/* ── charts ───────────────────────────────────────────────────────────── */
+
+/**
+ * A line chart, drawn by hand.
+ *
+ * Deliberately not a charting library: three series of at most a year of
+ * daily points does not need one, and a CDN script is a dependency that can
+ * disappear. `lines` is [{key, label, colour, fill}].
+ */
+function lineChart(node, rows, lines) {
+  if (!rows.length) {
+    node.innerHTML = `<p>Nothing recorded yet. The snapshot job started on 18 August 2026 and
+      writes one row an hour; the first line appears once there are two days to join up.</p>`;
+    return;
+  }
+
+  const W = 900, H = 240, PAD = { t: 14, r: 14, b: 26, l: 40 };
+  const iw = W - PAD.l - PAD.r, ih = H - PAD.t - PAD.b;
+
+  let max = 0;
+  for (const row of rows) for (const l of lines) max = Math.max(max, Number(row[l.key]) || 0);
+  // A flat zero series should sit on the floor with room above it, not fill
+  // the panel with a meaningless straight line at the top.
+  const top = max <= 0 ? 1 : max * 1.15;
+
+  const x = (i) => PAD.l + (rows.length === 1 ? iw / 2 : (i / (rows.length - 1)) * iw);
+  const y = (v) => PAD.t + ih - ((Number(v) || 0) / top) * ih;
+
+  const gridVals = [0, top / 2, top];
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Chart">`;
+
+  for (const g of gridVals) {
+    svg += `<line x1="${PAD.l}" x2="${W - PAD.r}" y1="${y(g).toFixed(1)}" y2="${y(g).toFixed(1)}"
+            stroke="#1c1c1c" stroke-width="1"/>`;
+    svg += `<text x="${PAD.l - 7}" y="${(y(g) + 3.5).toFixed(1)}" text-anchor="end"
+            fill="#6c6c76" font-size="10" font-family="ui-monospace, monospace">${num(g)}</text>`;
+  }
+
+  for (const l of lines) {
+    const pts = rows.map((r, i) => `${x(i).toFixed(1)},${y(r[l.key]).toFixed(1)}`);
+    if (l.fill) {
+      svg += `<polygon points="${x(0).toFixed(1)},${y(0).toFixed(1)} ${pts.join(" ")} ${x(rows.length - 1).toFixed(1)},${y(0).toFixed(1)}"
+              fill="${l.colour}" opacity="0.10"/>`;
+    }
+    svg += `<polyline points="${pts.join(" ")}" fill="none" stroke="${l.colour}"
+            stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    // The last point gets a dot: it is the number you actually came to read.
+    const last = rows.length - 1;
+    svg += `<circle cx="${x(last).toFixed(1)}" cy="${y(rows[last][l.key]).toFixed(1)}" r="3.2" fill="${l.colour}"/>`;
+  }
+
+  const labelEvery = Math.max(1, Math.ceil(rows.length / 6));
+  rows.forEach((r, i) => {
+    if (i % labelEvery && i !== rows.length - 1) return;
+    svg += `<text x="${x(i).toFixed(1)}" y="${H - 8}" text-anchor="middle"
+            fill="#6c6c76" font-size="10" font-family="ui-monospace, monospace">${shortDay(r.day)}</text>`;
+  });
+
+  svg += `</svg>`;
+  const legend = lines.map((l) =>
+    `<span><i style="background:${l.colour}"></i>${l.label}</span>`).join("");
+  node.innerHTML = svg + `<div class="legend">${legend}</div>`;
+}
+
+/** Paired bars — one up, one down — for things that arrive and things that leave. */
+function flowChart(node, rows) {
+  if (!rows.length) {
+    node.innerHTML = `<p>No days recorded yet.</p>`;
+    return;
+  }
+  const W = 900, H = 200, PAD = { t: 14, r: 14, b: 24, l: 40 };
+  const iw = W - PAD.l - PAD.r, ih = H - PAD.t - PAD.b;
+  const mid = PAD.t + ih / 2;
+
+  let max = 1;
+  for (const r of rows) max = Math.max(max, r.signups || 0, r.deletions || 0);
+  const half = ih / 2;
+  const bw = Math.max(2, Math.min(18, (iw / rows.length) * 0.55));
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Signups and deletions">`;
+  svg += `<line x1="${PAD.l}" x2="${W - PAD.r}" y1="${mid}" y2="${mid}" stroke="#282828"/>`;
+  svg += `<text x="${PAD.l - 7}" y="${mid - 4}" text-anchor="end" fill="#6c6c76" font-size="10"
+          font-family="ui-monospace, monospace">${num(max)}</text>`;
+
+  rows.forEach((r, i) => {
+    const cx = PAD.l + (i + 0.5) * (iw / rows.length);
+    const up = ((r.signups || 0) / max) * half;
+    const dn = ((r.deletions || 0) / max) * half;
+    if (up > 0) svg += `<rect x="${(cx - bw / 2).toFixed(1)}" y="${(mid - up).toFixed(1)}"
+                        width="${bw.toFixed(1)}" height="${up.toFixed(1)}" rx="1.5" fill="#4ade80"/>`;
+    if (dn > 0) svg += `<rect x="${(cx - bw / 2).toFixed(1)}" y="${mid.toFixed(1)}"
+                        width="${bw.toFixed(1)}" height="${dn.toFixed(1)}" rx="1.5" fill="#f87171"/>`;
+  });
+
+  const labelEvery = Math.max(1, Math.ceil(rows.length / 6));
+  rows.forEach((r, i) => {
+    if (i % labelEvery && i !== rows.length - 1) return;
+    const cx = PAD.l + (i + 0.5) * (iw / rows.length);
+    svg += `<text x="${cx.toFixed(1)}" y="${H - 7}" text-anchor="middle" fill="#6c6c76"
+            font-size="10" font-family="ui-monospace, monospace">${shortDay(r.day)}</text>`;
+  });
+  svg += `</svg>`;
+  node.innerHTML = svg +
+    `<div class="legend"><span><i style="background:#4ade80"></i>signups</span>
+     <span><i style="background:#f87171"></i>deletions</span></div>`;
+}
+
+/* ── rendering ────────────────────────────────────────────────────────── */
+
+const fig = (value, key, sub, tone) =>
+  `<div class="fig ${tone || ""}"><span class="v">${value}</span><span class="k">${key}</span>` +
+  (sub ? `<span class="sub">${sub}</span>` : "") + `</div>`;
+
+function render(d) {
+  const now = d.now, rows = d.series || [];
+
+  $("asof").textContent = `Read ${localTime(d.as_of)} · last ${d.days} days · days run midnight to midnight in Copenhagen`;
+
+  $("people").innerHTML =
+    fig(num(now.accounts), "accounts", null, "accent") +
+    fig(num(now.active_1d), "active today") +
+    fig(num(now.active_7d), "active this week") +
+    fig(num(now.active_30d), "active this month");
+
+  lineChart($("chart-accounts"), rows, [
+    { key: "accounts",  label: "accounts",       colour: "#a78bfa", fill: true },
+    { key: "active_7d", label: "active (7 days)", colour: "#38bdf8" },
+  ]);
+
+  flowChart($("chart-flow"), rows);
+
+  $("activity").innerHTML =
+    fig(num(now.workouts), "workouts logged") +
+    fig(num(now.focus), "focus sessions", null, "accent") +
+    fig(num(now.posts), "posts shared", null, "social") +
+    fig(num(now.groups), "groups", null, "social");
+
+  lineChart($("chart-activity"), rows, [
+    { key: "workouts",       label: "workouts",       colour: "#4ade80" },
+    { key: "focus_sessions", label: "focus sessions", colour: "#a78bfa" },
+  ]);
+
+  /* Churn. With nothing to report, say what that actually means rather than
+     printing a wall of zeroes — the counter only started on 18 August, and a
+     zero from a young counter is not the same claim as a zero from an old
+     one. */
+  const c = d.churn;
+  if (!c.deleted_total) {
+    $("churn").innerHTML = `<div class="panel"><h3>Nobody has left</h3>
+      <p>No account has been deleted since counting began on 18 August 2026. Deletions are
+      tallied the moment they happen — a date, the account's age, and how long since it was last
+      used — because once an account is gone there is nothing left to count.</p></div>`;
+  } else {
+    $("churn").innerHTML = `<div class="figures">` +
+      fig(num(c.deleted_total), "deleted, all time", null, "loss") +
+      fig(num(c.deleted_30d), "deleted in 30 days", null, "loss") +
+      fig(c.median_age_days == null ? "—" : `${num(c.median_age_days)}d`, "median account life",
+          "half of the people who left, left sooner than this") +
+      fig(c.dormant_share == null ? "—" : `${num(c.dormant_share)}%`, "already dormant",
+          "hadn't opened it for a fortnight before deleting") +
+      `</div>`;
+  }
+
+  /* Money. Both halves are honest about where they come from: revenue is zero
+     by construction, and costs are typed in by hand because no API knows them
+     all. */
+  const costs = d.costs || [];
+  const monthly = costs.reduce((sum, c2) =>
+    sum + (c2.period === "yearly" ? Number(c2.amount_usd) / 12 : Number(c2.amount_usd)), 0);
+
+  $("money").innerHTML = `
+    <div class="panel">
+      <h3>Revenue</h3>
+      <div class="figures" style="margin-top:10px">${fig("$0", "all time", null, "good")}</div>
+      <p class="note">${d.revenue.note}</p>
+    </div>
+    <div class="panel">
+      <h3>Running costs</h3>
+      <table style="margin-top:8px">
+        <tr><th>Item</th><th class="num" style="text-align:right">Cost</th></tr>
+        ${costs.map((c2) => `<tr><td>${c2.label}</td>
+          <td class="num">$${Number(c2.amount_usd).toFixed(2)}/${c2.period === "yearly" ? "yr" : "mo"}</td></tr>`).join("")}
+        <tr><td><strong>Per month</strong></td><td class="num"><strong>$${monthly.toFixed(2)}</strong></td></tr>
+      </table>
+      <p class="note">Typed in by hand — no API knows all of these. Edit <code>ops_costs</code>
+      in the Supabase SQL editor when a plan changes.</p>
+    </div>`;
+
+  $("housekeeping").innerHTML =
+    fig(num(now.push_devices), "devices for push") +
+    fig(bytes(now.storage_bytes), "photo storage",
+        Number(now.storage_bytes) === 0 ? "nothing uploaded yet" : null) +
+    fig(num(now.reports), "reports filed", null, Number(now.reports) ? "loss" : null) +
+    fig(hoursFromMinutes(rows.reduce((s, r) => s + (Number(r.focus_minutes) || 0), 0)),
+        "focused, this range", null, "accent");
+
+  $("footer").innerHTML = `
+    <p><strong>Where these come from.</strong> Everything above is your own database. A job writes
+    one row an hour into <code>metrics_daily</code> for today and yesterday, which is what makes the
+    lines possible — live queries can only ever say "now".</p>
+    <p><strong>What is missing.</strong> Downloads, App Store page views and install conversion live
+    in App Store Connect and cannot be seen from here: somebody who reads the listing and doesn't
+    install leaves no trace in the database. Revenue will come from the same place if there is ever
+    anything to report.</p>
+    <p><strong>Nothing tracks anybody.</strong> There is no analytics SDK in Steady. Every figure is
+    a count of rows that already existed, or a timestamp saying the app was opened.</p>`;
+}
+
+/* ── boot ─────────────────────────────────────────────────────────────── */
+
+function show(which) {
+  $("gate").classList.toggle("hidden", which !== "gate");
+  $("app").classList.toggle("hidden", which !== "app");
+}
+function gateMsg(text, kind) {
+  const el = $("gate-msg");
+  el.textContent = text || "";
+  el.className = "msg" + (kind ? " " + kind : "");
+}
+
+async function load() {
+  try {
+    render(await fetchDashboard());
+    show("app");
+  } catch (err) {
+    clearSession();
+    show("gate");
+    gateMsg(
+      String(err.message).includes("not authorised")
+        ? "That account is signed in, but it isn't an admin. Nothing to show it."
+        : `Couldn't load: ${err.message}`,
+      "bad");
+  }
+}
+
+$("send").addEventListener("click", async () => {
+  const email = $("email").value.trim();
+  if (!email) return;
+  $("send").disabled = true;
+  gateMsg("Sending…");
+  try {
+    // `create_user: false` so a typo can't quietly make an account.
+    await auth("otp", { email, create_user: false },
+               `?redirect_to=${encodeURIComponent(location.origin + location.pathname)}`);
+    $("step-email").classList.add("hidden");
+    $("step-code").classList.remove("hidden");
+    gateMsg("Sent. The link works once and expires within the hour.", "ok");
+  } catch (err) {
+    gateMsg(err.message, "bad");
+  } finally {
+    $("send").disabled = false;
+  }
+});
+
+$("back").addEventListener("click", () => {
+  $("step-code").classList.add("hidden");
+  $("step-email").classList.remove("hidden");
+  gateMsg("");
+});
+
+/**
+ * Accepts either the whole link out of the email or a bare code.
+ *
+ * Pasting the link is the path that always works: it needs nothing configured
+ * on the Supabase side, whereas clicking it only lands back here if this page's
+ * address is in the project's allowed redirects.
+ */
+$("verify").addEventListener("click", async () => {
+  const raw = $("code").value.trim();
+  if (!raw) return;
+  $("verify").disabled = true;
+  gateMsg("Checking…");
+
+  const email = $("email").value.trim();
+  const attempts = [];
+  if (raw.includes("token_hash=") || raw.includes("token=")) {
+    const q = raw.slice(raw.indexOf("?") + 1).replace(/#/g, "&");
+    const params = new URLSearchParams(q);
+    const hash = params.get("token_hash");
+    const tok  = params.get("token");
+    const type = params.get("type") || "magiclink";
+    if (hash) attempts.push({ type, token_hash: hash });
+    if (tok)  attempts.push({ type, token: tok, email });
+  } else {
+    attempts.push({ type: "email", token: raw, email });
+    attempts.push({ type: "magiclink", token: raw, email });
+  }
+
+  let lastError = "That didn't work.";
+  for (const body of attempts) {
+    try {
+      const out = await auth("verify", body);
+      saveSession({ access_token: out.access_token, refresh_token: out.refresh_token });
+      gateMsg("");
+      await load();
+      $("verify").disabled = false;
+      return;
+    } catch (err) { lastError = err.message; }
+  }
+  gateMsg(lastError, "bad");
+  $("verify").disabled = false;
+});
+
+$("signout").addEventListener("click", () => {
+  clearSession();
+  location.reload();
+});
+
+$("ranges").addEventListener("click", async (e) => {
+  const btn = e.target.closest("[data-days]");
+  if (!btn) return;
+  days = Number(btn.dataset.days);
+  for (const b of $("ranges").children) b.setAttribute("aria-pressed", String(b === btn));
+  await load();
+});
+
+(async function start() {
+  // Clicking the link in the email lands here with the tokens in the fragment,
+  // which is then wiped from the address bar so a shoulder-surfed URL is worth
+  // nothing.
+  if (location.hash.includes("access_token")) {
+    const p = new URLSearchParams(location.hash.slice(1));
+    saveSession({ access_token: p.get("access_token"), refresh_token: p.get("refresh_token") });
+    history.replaceState(null, "", location.pathname);
+  } else {
+    session = loadSession();
+  }
+
+  if (!session || !session.access_token) { show("gate"); return; }
+  await load();
+})();
+</script>
+</body>
+</html>

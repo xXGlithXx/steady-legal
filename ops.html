@@ -137,7 +137,7 @@
   .msg { margin-top: 12px; font-size: 13px; color: var(--ink-2); }
   .msg.bad { color: var(--loss); }
   .msg.ok  { color: var(--good); }
-  .hint { color: var(--ink-3) !important; font-size: 12px !important; margin-top: 14px !important;
+  .hint { color: var(--ink-3) !important; font-size: 12px !important; margin: 0 0 14px !important;
           line-height: 1.5; }
   .hidden { display: none !important; }
   footer { margin-top: 34px; padding-top: 16px; border-top: 1px solid var(--hair);
@@ -160,15 +160,15 @@
   </div>
 
   <div id="step-code" class="hidden">
-    <p><strong>Copy the sign-in link</strong> out of the email — long-press it, Copy Link — and
-       paste it below. If the email shows a <strong>6-digit code</strong> instead, type that.</p>
+    <p><strong>Tap <em>Sign in</em> in the email.</strong> That should bring you straight back
+       here, signed in.</p>
+    <p class="hint">If it dumps you somewhere else, come back to this page and paste the link
+       instead — right-click it in the email, Copy Link. Each link works once, so a new one has
+       to be sent after a failed attempt.</p>
     <input id="code" type="text" autocomplete="one-time-code"
-           placeholder="Paste the link, or type the code">
+           placeholder="Paste the sign-in link">
     <button class="primary" id="verify">Sign in</button>
     <button class="link" id="back">← use a different email</button>
-    <p class="hint">Tapping the link only lands back here once this page's address is listed
-       under Supabase → Authentication → URL Configuration → Redirect URLs. Until it is,
-       copying beats tapping — a tapped link is spent either way.</p>
   </div>
 
   <div class="msg" id="gate-msg"></div>

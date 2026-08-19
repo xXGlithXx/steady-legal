@@ -155,18 +155,16 @@
   <div id="step-email">
     <input id="email" type="email" inputmode="email" autocomplete="email"
            placeholder="you@example.com" value="avestaalam@gmail.com">
-    <button class="primary" id="send">Send me a sign-in email</button>
+    <button class="primary" id="send">Email me a sign-in code</button>
     <div id="captcha"></div>
   </div>
 
   <div id="step-code" class="hidden">
-    <p><strong>Tap <em>Sign in</em> in the email.</strong> That should bring you straight back
-       here, signed in.</p>
-    <p class="hint">If it dumps you somewhere else, come back to this page and paste the link
-       instead — right-click it in the email, Copy Link. Each link works once, so a new one has
-       to be sent after a failed attempt.</p>
-    <input id="code" type="text" autocomplete="one-time-code"
-           placeholder="Paste the sign-in link">
+    <p>Type the <strong>6-digit code</strong> from the email.</p>
+    <p class="hint">It works once and expires within the hour. A code doesn't care which device
+       you read it on, which is why it is a code and not a link.</p>
+    <input id="code" type="text" inputmode="numeric" autocomplete="one-time-code"
+           maxlength="64" placeholder="123456">
     <button class="primary" id="verify">Sign in</button>
     <button class="link" id="back">← use a different email</button>
   </div>
@@ -591,7 +589,7 @@ $("send").addEventListener("click", async () => {
                `?redirect_to=${encodeURIComponent(location.origin + location.pathname)}`);
     $("step-email").classList.add("hidden");
     $("step-code").classList.remove("hidden");
-    gateMsg("Sent. Whatever is in it works once, and expires within the hour.", "ok");
+    gateMsg("Sent. The code works once and expires within the hour.", "ok");
   } catch (err) {
     gateMsg(err.message, "bad");
   } finally {
